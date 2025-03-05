@@ -33,8 +33,10 @@ function draworupdatecursor(id, position) {
 
     let cursor = cursors[id];
     if (!cursor) {
+
         cursor = new playbox(40, 40, position.x, position.y, "#00ff00");
         cursors[id] = cursor;
+
     } else {
 
         cursors[id].x = position.x;
@@ -53,6 +55,12 @@ function playbox(width, height, x, y, color) {
     this.y = y;
     ctx.fillStyle = color
     ctx.fillRect(this.x ,this.y, this.width, this.height);
+
+    this.update = function(){
+
+        ctx.fillRect(this.x, this.y , this.width, this.height);
+
+    }
 
 
 }
