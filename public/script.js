@@ -1,14 +1,69 @@
+
 const canvas = document.getElementById("gamecanvas");
 const ctx = canvas.getContext("2d");
+let PlayerId;
 let keys = {up: false, down: false, left: false, right: false};
 let boost = {up: false, down: false, left: false, right: false};
 let boostvelo = 140;
 let spacepressed = false;
 let speed = 4;
 let thinglist = [];
+let socket = io();
 
 canvas.width = innerWidth;
 canvas.height = innerHeight;
+
+socket.on("connect", () => {
+
+    PlayerId = socket.id
+    console.log(PlayerId);
+
+})
+
+let cursors = {};
+
+
+socket.on("playermoved", ({id, position}) => {
+
+    draworupdatecursor(id, position);
+
+})
+
+function draworupdatecursor(id, position) {
+
+    let cursor = cursors[id];
+    if (!cursor) {
+        cursor = new playbox(40, 40, position.x, position.y, "#00ff00");
+        cursors[id] = cursor;
+    } else {
+
+        cursors[id].x = position.x;
+        cursors[id].y = position.y;
+
+    }
+
+
+}
+
+function playbox(width, height, x, y, color) {
+
+    this.width = width;
+    this.height = height;
+    this.x = x;
+    this.y = y;
+    ctx.fillStyle = color
+    ctx.fillRect(this.x ,this.y, this.width, this.height);
+
+
+}
+
+
+
+
+
+
+
+
 
 function createbox(width, height, x, y, color, vX = 0, vY = 0, velo = 0) {
 
@@ -23,7 +78,7 @@ function createbox(width, height, x, y, color, vX = 0, vY = 0, velo = 0) {
     ctx.fillRect(this.x ,this.y, this.width, this.height);
     this.update = function(){
 
-        if (spacepressed) this.morevelo = 28;
+        if (spacepressed) this.morevelo = 24;
 
         ctx.fillStyle = color;
         if (keys.up) {
@@ -47,12 +102,19 @@ function createbox(width, height, x, y, color, vX = 0, vY = 0, velo = 0) {
         }
 
         spacepressed = false;
-        if (this.morevelo > 0) this.morevelo -= 4;
-        if (this.morevelo < 0) this.morevelo += 4;
+        if (this.morevelo > 0) this.morevelo -= 2;
+        if (this.morevelo < 0) this.morevelo += 2;
 
         // boost.up, boost.down, boost.left, boost.right = false;
 
         ctx.fillRect(this.x, this.y , this.width, this.height);
+        const position = {x: this.x, y: this.y};
+
+        if (keys.up || keys.down || keys.left || keys.right) {
+
+            socket.emit("uploadposition", position);
+
+        }
 
     }
 
@@ -106,11 +168,6 @@ function clear() {
 }
 
 
-// function clear() {
-//     // console.log("/")
-//     ctx.clearRect(0, 0, canvas.width, canvas.height);
-//     box.update();
-// }
 
 let box = new createbox(40, 40, 600, 350, "#00ff00");
 // let delay  = setInterval(clear, 10);
@@ -203,3 +260,27 @@ function projectile(width, height, x, y, color, vX , vY ) {
     }
 
 }
+
+const mydiv = document.getElementById("mydiv");
+let offx, offy;
+let clicked = false;
+
+mydiv.addEventListener("pointerdown", (e) => {
+
+    clicked = true;
+    offx = e.clientX - mydiv.offsetLeft;
+    offy = e.clientY - mydiv.offsetTop;
+
+})
+
+document.addEventListener("pointermove", (e) => {
+
+    if (clicked) {
+        mydiv.style.left = `${e.clientX - offx}px`;
+        mydiv.style.top = `${e.clientY - offy}px`;
+    }
+})
+
+mydiv.addEventListener("pointerup", () => {
+    clicked = false;
+})

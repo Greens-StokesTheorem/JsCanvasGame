@@ -20,6 +20,18 @@
         background-color: aquamarine;
         overflow: hidden;
     }
+
+    #mydiv {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 3rem;
+        height: 3rem;
+        background-color: crimson;
+
+    }
+
+
 </style>
 
 
@@ -27,6 +39,7 @@
 
     <canvas id="gamecanvas" ></canvas>
 
+    <div id="mydiv"></div>
 
 
 
@@ -35,7 +48,7 @@
 
 
 
-
+    <script src="/socket.io/socket.io.js"></script>
     <script src="/script.js"></script>
 
 </body>

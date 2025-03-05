@@ -8,6 +8,10 @@ const port = 8080;
 const fs = require("fs");
 const { Socket } = require('dgram');
 
+
+let playerlist = {};
+
+
 app.use(express.static("public"));
 
 app.get('/', (req, res) => {
@@ -20,7 +24,7 @@ app.get('/', (req, res) => {
 io.on("connection", (socket) => {
 
     console.log("new player has connected");
-
+    console.log(socket.id);
 
 
 
@@ -28,7 +32,22 @@ io.on("connection", (socket) => {
         console.log("PLayer has disconnected")
     })
 
+    socket.on("uploadposition", (position) => {
+
+
+        playerlist[socket.id] = position;
+        console.log(playerlist);
+        socket.broadcast.emit("playermoved", {id: socket.id, position});
+
+    })
+
+
 });
+
+
+
+
+
 
 
 server.listen(port, () => {
