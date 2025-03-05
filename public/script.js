@@ -25,6 +25,8 @@ let cursors = {};
 
 socket.on("playermoved", ({id, position}) => {
 
+    console.log(id)
+    console.log(position)
     draworupdatecursor(id, position);
 
 })
@@ -41,6 +43,7 @@ function draworupdatecursor(id, position) {
 
         cursors[id].x = position.x;
         cursors[id].y = position.y;
+        cursors[id].update();
 
     }
 
@@ -58,6 +61,7 @@ function playbox(width, height, x, y, color) {
 
     this.update = function(){
 
+
         ctx.fillRect(this.x, this.y , this.width, this.height);
 
     }
@@ -67,7 +71,11 @@ function playbox(width, height, x, y, color) {
 
 
 
+// function updateotherplayer(players) {
 
+//     for (const [id, position] of Object.entries(players))
+
+// }
 
 
 
@@ -169,7 +177,15 @@ function clear() {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     box.update();
-    thinglist.forEach((id) => {id.update();});
+    // cursors.forEach((id) => {id.update();});
+
+    for (const [id, position] of Object.entries(cursors)) {
+
+        // console.log(position)
+        position.update();
+      
+    }
+
 
     requestAnimationFrame(clear);
 

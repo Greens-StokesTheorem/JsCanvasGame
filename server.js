@@ -36,7 +36,7 @@ io.on("connection", (socket) => {
 
 
         playerlist[socket.id] = position;
-        console.log(playerlist);
+        // console.log(playerlist);
         socket.broadcast.emit("playermoved", {id: socket.id, position});
 
     })
